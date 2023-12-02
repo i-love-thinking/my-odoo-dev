@@ -1,4 +1,3 @@
-version: '3.5'
 services:
 
   # djangosite:
@@ -20,8 +19,8 @@ services:
     build: ./web
     depends_on:
       - db
-    # ports:
-    #   - "8069:8069"
+    ports:
+      - "8072:8072"
     volumes:
       - ./.run:/var/run/
       - ./web:/usr/src/app
@@ -48,17 +47,17 @@ services:
       - PASSWORD=myodoo
 
   db:
-    image: postgres:13.1-alpine
-    # ports:
-    #   - "5432:5432"
+    image: postgres:16.1
+    ports:
+      - "5432:5432"
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=odoo
       - POSTGRES_PASSWORD=myodoo
       - PGDATA=/var/lib/postgresql/data/pgdata
     volumes:
-      - ./pgdata:/var/lib/postgresql/data/pgdata
-      - ./.run/postgresql:/var/run/postgresql
+      - pgdata:/var/lib/postgresql/data/pgdata
+      # - ./.run/postgresql:/var/run/postgresql
 
   nginx:
     image: nginx
@@ -80,3 +79,8 @@ services:
     # logging:
     #   driver: none
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+    depends_on:
+      - web
+
+volumes:
+  pgdata:
